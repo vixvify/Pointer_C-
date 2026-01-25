@@ -40,7 +40,7 @@ void addNode(string name,int score,Node** head){
         return;
     }
     Node *temp = *head;
-    if (score > temp->score) {
+    if (score > temp->next->score) {
         newNode->next = temp;
         temp->prev = newNode;
         *head = newNode;
