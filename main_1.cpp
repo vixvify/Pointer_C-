@@ -18,22 +18,50 @@ Node* createNode(string name,int score){
     return s;
 }
 
+void checkLowScores(Node** head) {
+    if (*head == NULL) return;
+    Node* temp = *head;
+    int count = 1;
+    while(temp -> next != NULL && count < 3) {
+        temp = temp -> next;
+        count++;
+    }
+    if (temp->next != NULL) {
+        Node* cut = temp->next;
+        temp->next = NULL;
+        cut->prev = NULL;
+    }
+}
+
 void addNode(string name,int score,Node** head){
     Node *newNode = createNode(name,score);
     if(*head == NULL){
         *head = newNode;
-        cout << newNode->name << endl;
-        cout << newNode->score << endl;
         return;
     }
     Node *temp = *head;
-    while(temp->next != NULL){
+    if (score > temp->score) {
+        newNode->next = temp;
+        temp->prev = newNode;
+        *head = newNode;
+        return;
+    }
+    while(temp->next != NULL && temp->score > score){
         temp = temp -> next;
     }
+    newNode->next = temp->next;
     temp -> next = newNode;
     newNode->prev = temp;
-    cout << newNode->name << endl;
-    cout << newNode->score << endl;
+
+    checkLowScores(head);
+}
+
+void printNode(Node* head) {
+    Node *temp = head;
+    while(temp != NULL) {
+        cout << temp -> name << " " << temp -> score << "\n";
+        temp = temp -> next;
+    }
 }
 
 
@@ -42,5 +70,11 @@ int main() {
     addNode("aaa",25,&head);
     addNode("bbb",35,&head);
     addNode("ccc",24,&head);
+    addNode("ccc",44,&head);
+    addNode("ccc",12,&head);
+    addNode("ccc",5,&head);
+    addNode("ccc",50,&head);
+
+    printNode(head);
     return 0;
 }
