@@ -40,13 +40,13 @@ void addNode(string name,int score,Node** head){
         return;
     }
     Node *temp = *head;
-    if (score > temp->next->score) {
+    if (score > temp->score) {
         newNode->next = temp;
         temp->prev = newNode;
         *head = newNode;
         return;
     }
-    while(temp->next != NULL && temp->score > score){
+    while(temp->next != NULL && temp->next->score > score){
         temp = temp -> next;
     }
     newNode->next = temp->next;
