@@ -1,11 +1,10 @@
-#include <algorithm>
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <cmath>
-#include <ranges>
+#include <limits>
 
 using namespace std;
 
@@ -46,27 +45,44 @@ double calculatequery(vector<double>& dataset,vector<double>& query) {
     return sqrt(sum);
 }
 
-vector<int> findknn(vector<Data>& dataset,vector<double>& query, int k) {
-    vector<pair<double,int>> result;
-    vector<int> neighbors;
+vector<pair<double,int>> findknn(vector<Data>& dataset,vector<double>& query) {
+    double INF = std::numeric_limits<double>::infinity();
+    vector<pair<double,int>> result = {{INF,NULL},{INF,NULL},{INF,NULL}};
+
     for (int i = 0; i < dataset.size(); i++) {
         double result_item = calculatequery(dataset[i].data,query);
-        result.push_back({result_item,i});
+        if (result_item<result[0].first) {
+            result[2].first = result[1].first;
+            result[2].second = result[1].second;
+
+            result[1].first = result[0].first;
+            result[1].second = result[0].second;
+
+            result[0].first = result_item;
+            result[0].second = i;
+        }
+        else if (result_item<result[1].first) {
+            result[2].first = result[1].first;
+            result[2].second = result[1].second;
+
+            result[1].first = result_item;
+            result[1].second = i;
+        }
+        else if (result_item<result[2].first) {
+            result[2].first = result_item;
+            result[2].second = i;
+        }
     }
-    sort(result.begin(), result.end());
-    for (int i = 0; i < k; i++) {
-        neighbors.push_back(result[i].second);
-    }
-    return neighbors;
+    return result;
 }
 
 int main() {
     vector<Data> dataset = loadCSV("mbti.csv");
     vector<double> query = {32.0,32.0,27.0,36.0,29.0,31.0,28.0,23.0};
-    vector<int> neighbors = findknn(dataset,query,3);
+    vector<pair<double,int>> neighbors = findknn(dataset,query);
 
-    for (int idx : neighbors) {
-        cout << "Index: " << idx << endl;
-    }
+   for (int i = 0; i < neighbors.size(); i++) {
+       cout << "weight = " << neighbors[i].first << " " << "index = " << neighbors[i].second << endl;
+   }
     return 0;
 }
