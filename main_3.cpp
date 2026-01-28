@@ -45,10 +45,41 @@ double calculatequery(vector<double>& dataset,vector<double>& query) {
     return sqrt(sum);
 }
 
+string checkType (vector<double>& query) {
+    string type;
+    if (query[0] > query[1]) type = "E";
+    else type = "I";
+
+    if (query[2] > query[3]) type += "S";
+    else type += "N";
+
+    if (query[4] > query[5]) type += "T";
+    else type += "F";
+
+    if (query[6] > query[7]) type += "J";
+    else type += "P";
+
+    return type;
+}
+
+string findNewType(vector<Data>& dataset,vector<pair<double,int>> nearest) {
+    string t1 = checkType(dataset[nearest[0].second].data);
+    string t2 = checkType(dataset[nearest[1].second].data);
+    string t3 = checkType(dataset[nearest[2].second].data);
+    string type;
+
+    for (int i = 0; i < 4; i++) {
+        if (t1[i] == t2[i] || t1[i] == t3[i])
+            type += t1[i];
+        else if (t2[i] == t1[i] || t2[i] == t3[i])
+            type += t2[i];
+    }
+    return type;
+}
+
 vector<pair<double,int>> findknn(vector<Data>& dataset,vector<double>& query) {
     double INF = std::numeric_limits<double>::infinity();
     vector<pair<double,int>> result = {{INF,NULL},{INF,NULL},{INF,NULL}};
-
     for (int i = 0; i < dataset.size(); i++) {
         double result_item = calculatequery(dataset[i].data,query);
         if (result_item<result[0].first) {
@@ -84,5 +115,7 @@ int main() {
    for (int i = 0; i < neighbors.size(); i++) {
        cout << "weight = " << neighbors[i].first << " " << "index = " << neighbors[i].second << endl;
    }
+    string newType = findNewType(dataset, neighbors);
+    cout << newType << endl;
     return 0;
 }
