@@ -4,7 +4,6 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
-#include <limits>
 
 using namespace std;
 
@@ -77,34 +76,50 @@ string findNewType(vector<Data>& dataset,vector<pair<double,int>> nearest) {
     return type;
 }
 
-vector<pair<double,int>> findknn(vector<Data>& dataset,vector<double>& query) {
-    double INF = std::numeric_limits<double>::infinity();
-    vector<pair<double,int>> result = {{INF,NULL},{INF,NULL},{INF,NULL}};
-    for (int i = 0; i < dataset.size(); i++) {
-        double result_item = calculatequery(dataset[i].data,query);
-        if (result_item<result[0].first) {
-            result[2].first = result[1].first;
-            result[2].second = result[1].second;
+int partition(vector<pair<double,int>>& a, int l, int r) {
+    double pivot = a[r].first;
+    int i = l;
 
-            result[1].first = result[0].first;
-            result[1].second = result[0].second;
-
-            result[0].first = result_item;
-            result[0].second = i;
-        }
-        else if (result_item<result[1].first) {
-            result[2].first = result[1].first;
-            result[2].second = result[1].second;
-
-            result[1].first = result_item;
-            result[1].second = i;
-        }
-        else if (result_item<result[2].first) {
-            result[2].first = result_item;
-            result[2].second = i;
+    for (int j = l; j < r; j++) {
+        if (a[j].first <= pivot) {
+            swap(a[i], a[j]);
+            i++;
         }
     }
-    return result;
+    swap(a[i], a[r]);
+    return i;
+}
+
+void quickselect(vector<pair<double,int>>& a, int l, int r, int k) {
+    if (l >= r) return;
+
+    int pivotIdx = l + rand() % (r - l + 1);
+    swap(a[pivotIdx], a[r]);
+
+    int p = partition(a, l, r);
+
+    if (p == k) return;
+    else if (p > k)
+        quickselect(a, l, p - 1, k);
+    else
+        quickselect(a, p + 1, r, k);
+}
+
+
+vector<pair<double,int>> findNearest(vector<pair<double,int>>& dataset,int k) {
+    if (k >= dataset.size()) return dataset;
+    quickselect(dataset, 0, dataset.size()-1, k-1);
+    return vector<pair<double,int>>(dataset.begin(), dataset.begin()+k);
+
+}
+
+vector<pair<double,int>> findknn(vector<Data>& dataset,vector<double>& query) {
+    vector<pair<double,int>> calData;
+    for (int i = 0; i < dataset.size(); i++) {
+        double result_item = calculatequery(dataset[i].data,query);
+        calData.push_back(make_pair(result_item,i));
+    }
+    return findNearest(calData,3);
 }
 
 int main() {
