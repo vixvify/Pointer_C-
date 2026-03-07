@@ -40,7 +40,6 @@ vector<Data> loadCSV(string filename) {
 }
 
 double calculatequery(vector<double>& dataset,vector<double>& query) {
-    vector<double> result;
     double sum = 0;
     for (int i = 0; i < dataset.size(); i++) {
         double result_item = query[i]-dataset[i];
