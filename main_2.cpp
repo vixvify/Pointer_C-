@@ -5,96 +5,134 @@ using namespace std;
 struct Node {
     int coef;
     int exp;
-    Node *next;
-    Node *prev;
+    Node* next;
+    Node* prev;
 };
 
 Node* createNode(int coef, int exp) {
-    Node *s = new Node;
-    s -> coef = coef;
-    s -> exp = exp;
-    s -> next = NULL;
-    s->prev = NULL;
-    return s;
+    Node* node = new Node;
+    node->coef = coef;
+    node->exp = exp;
+    node->next = nullptr;
+    node->prev = nullptr;
+    return node;
 }
 
-void addNode(int coef, int exp,Node** head,Node **tail){
-    Node *newNode = createNode(coef,exp);
-    if(*head == NULL){
+void addNode(int coef, int exp, Node** head, Node** tail) {
+
+    Node* newNode = createNode(coef, exp);
+
+    if (*head == nullptr) {
         *head = newNode;
         *tail = newNode;
         return;
     }
-    (*tail) -> next = newNode;
-    newNode -> prev = *tail;
+
+    (*tail)->next = newNode;
+    newNode->prev = *tail;
     *tail = newNode;
 }
 
-Node* addpolynomial(Node** head1,Node** head2) {
-    Node *temp1 = *head1;
-    Node *temp2 = *head2;
-    Node *headresult = NULL;
-    Node *tailresult = NULL;
+Node* addPolynomial(Node** head1, Node** head2) {
 
-    while(temp1 != NULL && temp2 != NULL) {
-        if(temp1 -> exp == temp2 -> exp) {
-            int coef = temp1->coef + temp2->coef;
-            if(coef != 0) {
-                addNode(coef, temp1->exp, &headresult,&tailresult);
-            }
-            temp1 = temp1->next;
-            temp2 = temp2->next;
+    Node* p1 = *head1;
+    Node* p2 = *head2;
+
+    Node* headResult = nullptr;
+    Node* tailResult = nullptr;
+
+    while (p1 != nullptr && p2 != nullptr) {
+
+        if (p1->exp == p2->exp) {
+
+            int coef = p1->coef + p2->coef;
+
+            if (coef != 0)
+                addNode(coef, p1->exp, &headResult, &tailResult);
+
+            p1 = p1->next;
+            p2 = p2->next;
         }
-        else if(temp1 -> exp > temp2 -> exp) {
-            addNode(temp1 -> coef,temp1 -> exp,&headresult,&tailresult);
-            temp1 = temp1 -> next;
+
+        else if (p1->exp > p2->exp) {
+
+            addNode(p1->coef, p1->exp, &headResult, &tailResult);
+            p1 = p1->next;
         }
-        else if(temp1 -> exp < temp2 -> exp) {
-            addNode(temp2 -> coef,temp2 -> exp,&headresult,&tailresult);
-            temp2 = temp2 -> next;
+
+        else {
+
+            addNode(p2->coef, p2->exp, &headResult, &tailResult);
+            p2 = p2->next;
         }
-    }
-    while(temp1 != NULL) {
-        addNode(temp1->coef, temp1->exp, &headresult,&tailresult);
-        temp1 = temp1->next;
-    }
-    while(temp2 != NULL) {
-        addNode(temp2->coef, temp2->exp, &headresult,&tailresult);
-        temp2 = temp2->next;
     }
 
-    return headresult;
+    while (p1 != nullptr) {
+        addNode(p1->coef, p1->exp, &headResult, &tailResult);
+        p1 = p1->next;
+    }
+
+    while (p2 != nullptr) {
+        addNode(p2->coef, p2->exp, &headResult, &tailResult);
+        p2 = p2->next;
+    }
+
+    return headResult;
 }
 
-Node* multiplypolynomial(Node** head1,Node** head2) {
-    Node *temp1 = *head1;
-    Node *headresult = NULL;
-    Node *tailresult = NULL;
-    vector<int> coef(100,0);
+Node* multiplyPolynomial(Node** head1, Node** head2) {
 
-    while(temp1 != NULL) {
-        Node *temp2 = *head2;
-        while(temp2 != NULL) {
-           coef[temp1->exp + temp2->exp] += temp1->coef * temp2->coef;
-            temp2 = temp2->next;
+    Node* p1 = *head1;
+
+    Node* headResult = nullptr;
+    Node* tailResult = nullptr;
+
+    vector<int> coef(100, 0);
+
+    while (p1 != nullptr) {
+
+        Node* p2 = *head2;
+
+        while (p2 != nullptr) {
+
+            int exp = p1->exp + p2->exp;
+            coef[exp] += p1->coef * p2->coef;
+
+            p2 = p2->next;
         }
-        temp1 = temp1->next;
+
+        p1 = p1->next;
     }
 
-    for(int i = coef.size()-1; i >= 0; i--) {
-        if(coef[i] != 0) {
-            addNode(coef[i],i,&headresult,&tailresult);
-        }
+    for (int i = coef.size() - 1; i >= 0; i--) {
+
+        if (coef[i] != 0)
+            addNode(coef[i], i, &headResult, &tailResult);
     }
 
-    return headresult;
+    return headResult;
+}
+
+void printPolynomial(Node* head) {
+
+    Node* temp = head;
+
+    while (temp != nullptr) {
+        cout << temp->coef << "x^" << temp->exp << " ";
+        temp = temp->next;
+    }
+
+    cout << endl;
 }
 
 int main() {
-    Node* head1 = NULL;
-    Node* head2 = NULL;
-    Node* tail1 = NULL;
-    Node* tail2 = NULL;
+
+    Node* head1 = nullptr;
+    Node* tail1 = nullptr;
+
+    Node* head2 = nullptr;
+    Node* tail2 = nullptr;
+
     addNode(2,5,&head1,&tail1);
     addNode(4,3,&head1,&tail1);
     addNode(3,2,&head1,&tail1);
@@ -104,19 +142,10 @@ int main() {
     addNode(5,3,&head2,&tail2);
     addNode(4,2,&head2,&tail2);
     addNode(6,0,&head2,&tail2);
-    cout  << endl;
-    // Node* addresult = addpolynomial(&head1,&head2);
-    // Node* addtemp = addresult;
-    // while(addtemp != NULL) {
-    //     cout << addtemp -> coef << "x" << addtemp -> exp << " ";
-    //     addtemp = addtemp->next;
-    // }
-    // cout << endl;
-    Node* mulresult = multiplypolynomial(&head1,&head2);
-    Node* multemp = mulresult;
-    while(multemp != NULL) {
-        cout << multemp -> coef << "x" << multemp -> exp << " ";
-        multemp = multemp->next;
-    }
+
+    Node* result = multiplyPolynomial(&head1,&head2);
+
+    printPolynomial(result);
+
     return 0;
 }

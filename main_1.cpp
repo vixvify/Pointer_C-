@@ -5,68 +5,82 @@ using namespace std;
 struct Node {
     string name;
     int score;
-    Node *next;
-    Node *prev;
+    Node* next;
+    Node* prev;
 };
 
-Node* createNode(string name,int score){
-    Node *s = new Node;
-    s -> name = name;
-    s -> score = score;
-    s -> next = NULL;
-    s->prev = NULL;
-    return s;
+Node* createNode(const string& name, int score) {
+    Node* node = new Node;
+    node->name = name;
+    node->score = score;
+    node->next = nullptr;
+    node->prev = nullptr;
+    return node;
 }
 
 void checkLowScores(Node** head) {
-    if (*head == NULL) return;
-    Node* temp = *head;
+
+    if (*head == nullptr) return;
+
+    Node* current = *head;
     int count = 1;
-    while(temp -> next != NULL && count < 3) {
-        temp = temp -> next;
+
+    while (current->next != nullptr && count < 3) {
+        current = current->next;
         count++;
     }
-    if (temp->next != NULL) {
-        Node* cut = temp->next;
-        temp->next = NULL;
-        cut->prev = NULL;
+
+    if (current->next != nullptr) {
+        Node* cut = current->next;
+        current->next = nullptr;
+        cut->prev = nullptr;
     }
 }
 
-void addNode(string name,int score,Node** head){
-    Node *newNode = createNode(name,score);
-    if(*head == NULL){
+void addNode(const string& name, int score, Node** head) {
+
+    Node* newNode = createNode(name, score);
+
+    if (*head == nullptr) {
         *head = newNode;
         return;
     }
-    Node *temp = *head;
-    if (score > temp->score) {
-        newNode->next = temp;
-        temp->prev = newNode;
+
+    Node* current = *head;
+
+    if (score > current->score) {
+        newNode->next = current;
+        current->prev = newNode;
         *head = newNode;
+        checkLowScores(head);
         return;
     }
-    while(temp->next != NULL && temp->next->score > score){
-        temp = temp -> next;
+
+    while (current->next != nullptr && current->next->score > score) {
+        current = current->next;
     }
-    newNode->next = temp->next;
-    temp -> next = newNode;
-    newNode->prev = temp;
+
+    newNode->next = current->next;
+    current->next = newNode;
+    newNode->prev = current;
 
     checkLowScores(head);
 }
 
-void printNode(Node* head) {
-    Node *temp = head;
-    while(temp != NULL) {
-        cout << temp -> name << " " << temp -> score << "\n";
-        temp = temp -> next;
+void printList(Node* head) {
+
+    Node* current = head;
+
+    while (current != nullptr) {
+        cout << current->name << " " << current->score << "\n";
+        current = current->next;
     }
 }
 
-
 int main() {
-    Node* head = NULL;
+
+    Node* head = nullptr;
+
     addNode("aaa",25,&head);
     addNode("bbb",35,&head);
     addNode("ccc",24,&head);
@@ -75,6 +89,7 @@ int main() {
     addNode("ccc",5,&head);
     addNode("ccc",50,&head);
 
-    printNode(head);
+    printList(head);
+
     return 0;
 }
