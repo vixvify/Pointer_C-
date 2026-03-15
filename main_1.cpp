@@ -18,14 +18,14 @@ Node* createNode(const string& name, int score) {
     return node;
 }
 
-void checkLowScores(Node** head) {
+void checkLowScores(Node** head,int k) {
 
     if (*head == nullptr) return;
 
     Node* current = *head;
     int count = 1;
 
-    while (current->next != nullptr && count < 3) {
+    while (current->next != nullptr && count < k) {
         current = current->next;
         count++;
     }
@@ -37,7 +37,7 @@ void checkLowScores(Node** head) {
     }
 }
 
-void addNode(const string& name, int score, Node** head) {
+void addNode(const string& name, int score, Node** head, int k) {
 
     Node* newNode = createNode(name, score);
 
@@ -52,7 +52,7 @@ void addNode(const string& name, int score, Node** head) {
         newNode->next = current;
         current->prev = newNode;
         *head = newNode;
-        checkLowScores(head);
+        checkLowScores(head,k);
         return;
     }
 
@@ -64,7 +64,7 @@ void addNode(const string& name, int score, Node** head) {
     current->next = newNode;
     newNode->prev = current;
 
-    checkLowScores(head);
+    checkLowScores(head,k);
 }
 
 void printList(Node* head) {
@@ -81,13 +81,13 @@ int main() {
 
     Node* head = nullptr;
 
-    addNode("aaa",25,&head);
-    addNode("bbb",35,&head);
-    addNode("ccc",24,&head);
-    addNode("ccc",44,&head);
-    addNode("ccc",12,&head);
-    addNode("ccc",5,&head);
-    addNode("ccc",50,&head);
+    addNode("aaa",25,&head,3);
+    addNode("bbb",35,&head,3);
+    addNode("ccc",24,&head,3);
+    addNode("ccc",44,&head,3);
+    addNode("ccc",12,&head,3);
+    addNode("ccc",5,&head,3);
+    addNode("ccc",50,&head,3);
 
     printList(head);
 
